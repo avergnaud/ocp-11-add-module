@@ -17,55 +17,55 @@ use: regular java sources
 Using openjdk version "12.0.1"
 
 Creates the .class files in build-output/staff
-'''
+```
 javac -d build-output/staff/ staff/zoo/staff/internal/Util.java staff/zoo/staff/api/Staff.java staff/module-info.java
-'''
+```
 
 Packages the .class files in a jar module
-'''
+```
 jar -cvf mods/zoo.staff.jar -C build-output/staff/ .
-'''
+```
 
 ## using zoo.staff.jar as an "unnamed module"
 Uses the zoo.staff.jar module in a regular classpath (build), as an "unnamed module"
-'''
+```
 javac -cp mods/zoo.staff.jar -d build-output/use/ use/com/Main.java
-'''
+```
 
 Uses the zoo.staff.jar module in a regular classpath (run), as an "unnamed module"
-'''
+```
 java -cp mods/zoo.staff.jar:build-output/use/ com.Main
-'''
+```
 prints:
-'''
+```
 zoo staff internal Util get value
 From Staff: zoo staff internal Util get value
-'''
+```
 This execution does not use zoo.staff.jar as a module. com.Main has access to the zoo.staff.internal package although it is not exported...
 
 ## using zoo.staff.jar as a module, enforcing its access restrictions
 What if we wanted to use zoo.staff.jar on the classpath, but as a module?
 
 Adding zoo.staff.jar on the module-path instead of the class-path is not enough:
-'''
+```
 java -p mods/zoo.staff.jar -cp build-output/use/ com.Main
-'''
+```
 prints:
-'''
+```
 Exception in thread "main" java.lang.NoClassDefFoundError: zoo/staff/internal/Util
 	at com.Main.main(Main.java:10)
 Caused by: java.lang.ClassNotFoundException: zoo.staff.internal.Util
 	...
-'''
+```
 
 The solution is the --add-modules option:
-'''
+```
 java -p mods/zoo.staff.jar -cp build-output/use/ --add-modules zoo.staff com.Main
-'''
+```
 This adds zoo.staff.jar on the module path and declares zoo.staff as a module. And we get the correct Error:
-'''
+```
 Exception in thread "main" java.lang.IllegalAccessError: class com.Main (in unnamed module @0x6d311334) cannot access class zoo.staff.internal.Util (in module zoo.staff) because module zoo.staff does not export zoo.staff.internal to unnamed module @0x6d311334
 	at com.Main.main(Main.java:10)
-'''
+```
 
 
