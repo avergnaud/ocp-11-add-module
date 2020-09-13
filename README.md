@@ -1,10 +1,3 @@
-package zoo.staff.api;
+# Java 11. modules
 
-import zoo.staff.internal.Util;
-
-public class Staff {
-
-        public static String get() {
-                return "From Staff: " + Util.get();
-        }
-}
+zoo.staff example from [https://www.selikoff.net/ocp11-1/](https://www.selikoff.net/ocp11-1/)
