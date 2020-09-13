@@ -5,7 +5,7 @@ zoo.staff example from [https://www.selikoff.net/ocp11-1/](https://www.selikoff.
 ## project structure
 
 build-output: contains the .class files
-
+			
 mods: contains the jar module(s)
 
 staff: staff module sources
@@ -68,4 +68,47 @@ Exception in thread "main" java.lang.IllegalAccessError: class com.Main (in unna
 	at com.Main.main(Main.java:10)
 ```
 
+## Any module is readable by other *CLASSES* or *JARS* on the classpath
+In order to test this assertion, we first build the jar file from the previously created .class files
+```
+jar -cvf build-output/use.jar -C build-output/use/ .
+```
+
+And we run the same java command, with a different cp:
+```
+java -p mods/zoo.staff.jar -cp build-output/use.jar --add-modules zoo.staff com.Main
+```
+this returns the same result as before:
+```
+Exception in thread "main" java.lang.IllegalAccessError: class com.Main (in unnamed module @0x448139f0) cannot access class zoo.staff.internal.Util (in module zoo.staff) because module zoo.staff does not export zoo.staff.internal to unnamed module @0x448139f0
+	at com.Main.main(Main.java:10)
+```
+
+What if we remove the --add-modules option?
+```
+java -p mods/zoo.staff.jar -cp build-output/use.jar com.Main
+```
+this returns the same result as before:
+```
+Exception in thread "main" java.lang.NoClassDefFoundError: zoo/staff/internal/Util
+	at com.Main.main(Main.java:10)
+Caused by: java.lang.ClassNotFoundException: zoo.staff.internal.Util
+	...
+```
+
+What is the meaning of "Any module is readable by other *CLASSES* or *JARS* on the classpath"?
+
+This means that both:
+```
+java -cp mods/zoo.staff.jar:build-output/use.jar com.Main
+```
+and:
+```
+java -cp mods/zoo.staff.jar:build-output/use/ com.Main
+```
+return:
+```
+zoo staff internal Util get value
+From Staff: zoo staff internal Util get value
+```
 
